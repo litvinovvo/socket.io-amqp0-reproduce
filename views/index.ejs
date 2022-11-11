@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat APP</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.3/socket.io.js"></script>
+</head>
+<body>
+    <div class="window">
+        <div class="chat-message">
+            <div id="output"></div>
+            <div id="feedback"></div>
+        </div>
+        <div class='fields'>
+            <input type="text" id="name" placeholder="Enter chat name">
+            <input type="text" id="message" placeholder="Enter message">
+            <button id="send">Send</button>
+        </div>
+    </div>
+    
+    <script>
+        window.config = {
+            port: <%- port %>,
+        }
+    </script>
+    <script src="/chat.js"></script>
+</body>
+</html>
