@@ -24,17 +24,26 @@ app.get('/', (req, res) => {
   }
 
   const io = new SocketServer(httpServer)
-  io.adapter(createAdapter({ amqpConnection: () =>  connect(`amqp://${rabbitMQSettings.user}:${rabbitMQSettings.password}@${rabbitMQSettings.host}`) }));
+  io.adapter(createAdapter({
+    amqpConnection: async () =>  await connect(`amqp://${rabbitMQSettings.user}:${rabbitMQSettings.password}@${rabbitMQSettings.host}`),
+    instanceName: `worker-${port}`
+  }));
 
   io.on('connection', socket => {
     const { port } = socket.handshake.auth
 
     console.log('new connection', port)
 
-    socket.on('send', ({ message, username }) => {
+    socket.on('send', ({ message, username, room }) => {
         const user = username || `unknown-from-${port}`
-        console.log('message event', message, user)
-        io.emit('send', { message, username: user })
+        console.log('message event', room, user, message)
+        io.to(room).emit('send', { room, message, username: user })
+    })
+
+    socket.on('enter', async ({ room }) => {
+      console.log('enter room', room)
+      socket.join(room)
+      console.log('sockets', (await io.fetchSockets()).length)
     })
   })
 
